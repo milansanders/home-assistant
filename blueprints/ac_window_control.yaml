@@ -37,43 +37,53 @@ triggers:
     to:
       - "on"
 actions:
-  - choose:
-      - conditions:
-          - condition: trigger
-            id:
-              - opened
-          - condition: not
-            conditions:
-              - condition: state
-                entity_id: !input ac
-                state:
-                  - "off"
-        sequence:
-          - action: input_boolean.turn_on
-            metadata: {}
-            target:
-              entity_id: !input ac_paused
-            data: {}
-          - action: climate.toggle
-            target:
-              entity_id: !input ac
-            data: {}
-      - conditions:
-          - condition: trigger
-            id:
-              - closed
+  - alias: If opened and not off
+    if:
+      - condition: trigger
+        id:
+          - opened
+      - condition: not
+        conditions:
           - condition: state
-            entity_id: !input ac_paused
+            entity_id: !input ac
             state:
-              - "on"
-        sequence:
+              - "off"
+        alias: AC is not off
+    then:
+      - action: input_boolean.turn_on
+        metadata: {}
+        target:
+          entity_id: !input ac_paused
+        data: {}
+      - action: climate.toggle
+        target:
+          entity_id: !input ac
+        data: {}
+  - alias: If closed and paused
+    if:
+      - condition: trigger
+        id:
+          - closed
+      - condition: state
+        entity_id: !input ac_paused
+        state:
+          - "on"
+    then:
+      - action: input_boolean.turn_off
+        metadata: {}
+        target:
+          entity_id: !input ac_paused
+        data: {}
+      - alias: If AC off
+        if:
+          - condition: state
+            entity_id: !input ac
+            state:
+              - "off"
+        then:
           - action: climate.toggle
-            target:
-              entity_id: !input ac
-            data: {}
-          - action: input_boolean.turn_off
             metadata: {}
             target:
-              entity_id: !input ac_paused
+              entity_id: !input ac
             data: {}
 mode: single
