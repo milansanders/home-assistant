@@ -1,0 +1,79 @@
+blueprint:
+  name: AC window control
+  description: Pauses active AC when window is opened, and resumes when closed
+  domain: automation
+  input:
+    window_sensor:
+      name: Window Sensor
+      description: The window sensor that triggers the action.
+      selector:
+        entity:
+          domain: binary_sensor
+    ac:
+      name: AC
+      description: The air conditioning unit to control.
+      selector:
+        entity:
+          domain: climate
+    ac_paused:
+      name: AC Paused
+      description: Entity to store if the AC is paused.
+      selector:
+        entity:
+          domain: input_boolean
+triggers:
+  - trigger: state
+    id: closed
+    entity_id: !input window_sensor
+    from:
+      - "on"
+    to:
+      - "off"
+  - trigger: state
+    id: opened
+    entity_id: !input window_sensor
+    from:
+      - "off"
+    to:
+      - "on"
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - opened
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: !input ac
+                state:
+                  - "off"
+        sequence:
+          - action: input_boolean.turn_on
+            metadata: {}
+            target:
+              entity_id: !input ac_paused
+            data: {}
+          - action: climate.toggle
+            target:
+              entity_id: !input ac
+            data: {}
+      - conditions:
+          - condition: trigger
+            id:
+              - closed
+          - condition: state
+            entity_id: !input ac_paused
+            state:
+              - "on"
+        sequence:
+          - action: climate.toggle
+            target:
+              entity_id: !input ac
+            data: {}
+          - action: input_boolean.turn_off
+            metadata: {}
+            target:
+              entity_id: !input ac_paused
+            data: {}
+mode: single
