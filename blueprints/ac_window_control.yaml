@@ -21,6 +21,12 @@ blueprint:
       selector:
         entity:
           domain: input_boolean
+    ac_mode:
+      name: AC Mode
+      description: Mode to set the AC to when the window closes
+      selector:
+        entity:
+          domain: input_select
 triggers:
   - trigger: state
     id: closed
@@ -36,6 +42,8 @@ triggers:
       - "off"
     to:
       - "on"
+variables:
+  input_ac_mode: !input ac_mode
 actions:
   - alias: If opened and not off
     if:
@@ -87,5 +95,5 @@ actions:
             target:
               entity_id: !input ac
             data:
-              hvac_mode: "{{ states.input_select.ac_mode.state }}"
+              hvac_mode: "{{ states(input_ac_mode) }}"
 mode: single
