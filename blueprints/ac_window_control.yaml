@@ -87,5 +87,5 @@ actions:
             target:
               entity_id: !input ac
             data:
-              hvac_mode: {{ states.input_select.ac_mode.state }}
+              hvac_mode: "{{ states.input_select.ac_mode.state }}
 mode: single
