@@ -55,10 +55,11 @@ actions:
         target:
           entity_id: !input ac_paused
         data: {}
-      - action: climate.toggle
+      - action: climate.set_hvac_mode
         target:
           entity_id: !input ac
-        data: {}
+        data:
+          hvac_mode: "off"
   - alias: If closed and paused
     if:
       - condition: trigger
@@ -81,9 +82,10 @@ actions:
             state:
               - "off"
         then:
-          - action: climate.toggle
+          - action: climate.set_hvac_mode
             metadata: {}
             target:
               entity_id: !input ac
-            data: {}
+            data:
+              hvac_mode: {{ states.input_select.ac_mode.state }}
 mode: single
