@@ -30,10 +30,12 @@ blueprint:
     delay_seconds:
       name: Delay
       description: How long the window must remain closed before triggering
-      default:
-        seconds: 2
+      default: 5
       selector:
-        duration: {}
+        number:
+          min: 0
+          max: 60
+          unit_of_measurement: seconds
 triggers:
   - trigger: state
     id: closed
