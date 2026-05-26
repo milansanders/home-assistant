@@ -27,6 +27,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    delay_seconds:
+      name: Delay
+      description: How long the window must remain closed before triggering
+      default:
+        seconds: 2
+      selector:
+        duration: {}
 triggers:
   - trigger: state
     id: closed
@@ -35,6 +42,8 @@ triggers:
       - "on"
     to:
       - "off"
+    for:
+      seconds: !input delay_seconds
   - trigger: state
     id: opened
     entity_id: !input window_sensor
@@ -42,6 +51,8 @@ triggers:
       - "off"
     to:
       - "on"
+    for:
+      seconds: !input delay_seconds
 variables:
   input_ac_mode: !input ac_mode
 actions:
